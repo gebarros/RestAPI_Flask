@@ -1,0 +1,143 @@
+Source: https://lucassimon.com.br/2018/06/serie-api-em-flask---parte-1---introducao-configuracao-e-hello-world/
+
+- colocar as variáreis de ambiente no .env e colocar no .gitignore
+Ex.: $ cat .env
+DEBUG=True
+APP_PORT=5000
+FLASK_APP="application.py"
+FLASK_ENV="development"
+SECRET_KEY="hard-secret-key"
+
+- instalar o pacote python-dotenv para realizar a leitura dessas váriaveis automáticamente no app:
+$ pip3 install python-dotenv
+
+# -*- coding: utf-8 -*-
+
+from os import getenv
+//
+from dotenv import load_dotenv
+
+- Importante organizar os requirements para ambiente de teste, dev e produção
+
+- pacote isort ajuda na padronização dos imports
+
+##### Testes 
+Pytest é um framework ou uma ferramenta para escrever testes, existem inúmeras 
+outras como o nose, unittest, doctest, mas o pytest é a mais poderosa.
+
+no requirement de teste 
+$ pip install -U pytest 
+$ pytest ou     pytest --verbose --color=yes
+
+
+Exemplos:
+$ pytest tests/auth/
+Executa todos os testes da pasta auth
+
+$ pytest tests/auth/test_resources.py
+Executa todos os testes do módulo test_resources.
+
+$ pytest tests/auth/test_resources.py::TestAuthenticateUser
+Executa todos os teste da classe TestAuthenticateUser.
+
+O pytest possui um módulo próprio para fazer depuração do código em Pyhton.
+
+Para isso precisamos importar o módulo import pytest e colocar um 
+ponto de parada pytest.set_trace(). 
+
+Antes de codificar os testes faça as seguintes validações em cima de modelos.
+
+1- Verifico se o campo existe
+2- Verifico se o campo é requerido
+3- Verifico se o campo é unique
+4- Verifico o tipo do campo: String, Int, Bool
+
+Isso é o básico de um teste. Lógico que você pode aumentar a sua gama verificando 
+tamanho da string, validadores, mensagens de erro e etc…
+
+########## Mongo
+pymongo==3.6.1
+flask-mongoengine==0.9.5
+mongoengine==0.15.0
+
+# -*- coding: utf-8 -*-
+
+from flask_mongoengine import MongoEngine
+
+db = MongoEngine()
+
+###########  marshmallow 
+é responsável por converter dados para tipos nativos do Python. 
+Utilizado bastante para validar os payloads de entrada e saída dos recursos
+
+$ pip install marshmallow
+
+>>>> Exemplo
+# -*- coding: utf-8 -*-
+
+from marshmallow import Schema
+from marshmallow.fields import Email, Str
+
+
+class UserRegistrationSchema(Schema):
+    full_name = Str(required=True, error_messages={'required': 'Campo obrigatório'})
+    email = Email(required=True, error_messages={'required': 'Campo obrigatório'})
+    password = Str(required=True, error_messages={'required': 'Campo obrigatório'})
+
+
+class UserSchema(Schema):
+    full_name = Str(required=True, error_messages={'required': 'Campo obrigatório'})
+    email = Email(required=True, error_messages={'required': 'Campo obrigatório'})
+    cpf_cnpj = Str()
+    active = Boolean()
+
+###### Bcrypt
+Responsável por encriptar a senha
+
+$ pip install bcrypt 
+
+####### Padronização de mensagem de erro
+Uma oura boa prática importante é padronizar as mensagens de erro:
+$ cat apps/messagens.py 
+MSG_INVALID_DATA = 'Ocorreu um erro nos campos informados.'
+MSG_DOES_NOT_EXIST = 'Este(a) {} não existe.'
+MSG_EXCEPTION = 'Ocorreu um erro no servidor. Contate o administrador.'
+MSG_ALREADY_EXISTS = 'Já existe um(a) {} com estes dados.'
+
+######### jwt - Flask-JWT-Extended.
+jwt: responsável por validar um autenticação
+
+JWT_ACCESS_TOKEN_EXPIRES=20
+JWT_REFRESH_TOKEN_EXPIRES=30
+
+########## Dockerfile
+FROM python:3.6-alpine
+RUN rm -rf /var/cache/apk/* && \
+    apk update && \
+    apk add make && \
+    apk add build-base && \
+    apk add gcc && \
+    apk add python3-dev && \
+    apk add libffi-dev && \
+    apk add musl-dev && \
+    apk add openssl-dev && \
+    apk del build-base && \
+    rm -rf /var/cache/apk/*
+
+ENV HOME=/home/api FLASK_APP=application.py FLASK_ENV=production WORKERS=4 PORT=5000
+RUN adduser -D api
+USER api
+WORKDIR $HOME
+COPY --chown=api:api . $HOME
+
+RUN python -m venv venv && \
+    venv/bin/pip install --upgrade pip && \
+    venv/bin/pip install -r requirements/prod.txt
+
+EXPOSE 5000
+ENTRYPOINT [ "./boot.sh" ]
+
+
+
+
+

@@ -1,0 +1,50 @@
+- Criar conta na AWS
+- Criar uma instância EC2 (Compute): EC2 > Instances 
+- Launch Instance > escolher o sistema operacional (Ubuntu server) > escolhe a config (Ex.: t2.micro) > Launch
+- Criar um novo par se senhas ou já pegar um existente (dar um nome), e fazer download
+- Pega a chave *.pem e guarda em alguma pasta segura, essa é a autorização para fazer acesso ssh  (chmod 400 *.pem)
+- No console, clicando na instancia tem as infos de IP publico ou DNS
+- No terminal local: ssh -i "keyname.pem" user@IPInstancia
+- Na pasta local do app, deletar todos arquivos e pastas que forem desnecessários (.gitignore, __pycache__, etc)
+- Copia a pasta para a instância
+- Atualiza as dependencias da máquina, instala o pip3, instala python3.7, instala o virtualenv, criar o venv e ativa-o 
+- pip install requirements
+- pip install gunicorn
+- export FLASK_APP=app.py / flask run --host=.0.0.0.0 (mudando o ip para adicionar o ip externo)
+- abre um browse, coloca o Ipexterno:5000 para ver se já tá de pé, provavel que por questoes de firewall não esteja funcionando, ai é
+só ir em Security groups > launch-wizard-11
+- e verifica se só está recebendo conexoes via ssh, tem q ativar o http
+- Vai em Edit > Add Rule (Adiciona no Type: HTTP, HTTPS e Custom TCP Protocol, para aceitar a porta 5000 do app), Protocol TCP não altera, Port Range muda só
+o do Custom para 5000, e depois deixa todos os IPs como: 0.0.0.0/0
+- Salva e já deve estar disponível
+
+
+###### Utilizando gunicorn e nginx para deixar a app rodando e não (flask run --host=.0.0.0.0 - formato de desenvolvimento)
+
+requisição > nginx > gunicorn > flaskapp
+
+resposta: requisição < nginx < gunicorn < flaskapp
+
+Ver no video do curso para configurar: Seção 16
+
+Obs: Usando esse meio, não precisa mais colocar a porta 5000, ele lida com isso.
+
+==> Criar um serviço para deixar td rodando em bg: supervisor - sudp apt install supervisor
+- definindo as configurações: nano /etc/supervisor/conf.d/flask.conf 
+[program:flaskapp]
+directory=/path/to/app
+command=/path/to/app/venv/gunicorn -w 3 app:app (-w é o número de worker)
+user=root
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+stderr_logfile=/var/log/flaskapp/flaskapp.err.log
+stdout_logfile=/var/log/flaskapp/flaskapp.out.log
+
+criar pasta:
+mkdir -p /var/log/flaskapp/
+touch /var/log/flaskapp/flaskapp.err.log
+touch /var/log/flaskapp/flaskapp.err.log
+
+$ supervisorctl reload

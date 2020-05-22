@@ -1,0 +1,42 @@
+######## Ferramentas para fazer deploy e integração contínua automatizada:
+** Circleci **
+Jenkins: mais conhecido, open-source
+Travis
+Semaphore
+Gitlab-ci 
+Pipeline do bitbucket
+Entre outros
+
+Processo completo de CI/CD Pipeline:
+Controle de versão > Build > Testes unitários > Deploy > Ambiente Testes > Deploy para produção > Avaliação + Validação
+
+- Entrega contínua de valor - Contínuos Delivery
+- Desenvolvimento de coisas pequenas e ir entregando, se algo é grande, melhor quebrar em pedaços
+
+- Conecta o local da aplicação em produção com o github, e depois selecionar o ferramenta de deploy
+
+- CI / CD
+CI: continuous integration: integra o código e roda os teste, fazer merge só se green
+CD: continuous Deployment: está td verde pode fazer o deploy, deploys mais frequentes
+
+Deploy: implanta um software num servidor
+
+Os jobs do Circleci são definidos em um config.yml, é ai que se especifica o uso de docker para deploy
+
+- Exemplo de um pipeline CI com git e flask app:
+1- Cria app python em flask
+2- Cria testes para o app
+3- Adiciona o arquivo config.yml 
+    Criar uma pasta chamada .circlecie dentro da app e adicionar o arquivo config.yml
+4- Push no github
+5- Configura o CircleCI 
+    Cria uma conta no CircleCI > Add Projects (conecta com git) > Set up Project > Se já tem o arquivo config.yml, já vamos para o passo 5 > Start Build
+    Configura como vai ser a integração, define notificação via slack
+
+6- Atualiza o README
+# PYTHON APPLICATION
+This Python application repo was created to showcase the integration between GitHub and CircleCI.
+[![CircleCI](https://circleci.com/gh/NdagiStanley/python_app.svg?style=svg)](https://circleci.com/gh/NdagiStanley/python_app)
+
+7- Atualiza o PR e veja o CircleCI em ação 
+

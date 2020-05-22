@@ -1,0 +1,35 @@
+Instalação do GCloud# Adicionando pacote Cloud SDK como source
+
+echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list# Garantindo que tenhamos o apt-transport-https instalado:
+
+sudo apt-get install apt-transport-https ca-certificates gnupg# Importando a chave pública do Google Cloud:
+
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -# update and install
+
+sudo apt-get update && sudo apt-get install google-cloud-sdk# configurar
+
+gcloud init# copiar diretório local para remoto
+
+sudo gcloud compute scp --recurse /Caminho/Do/Seu/Computador nome-da-instancia:~/flaskapp
+
+
+################## preparando ambiente de deploy
+->nginx - (lida com serviços http, funciona como um proxy)
+$ sudo apt install nginx
+$ sudo /etc/init.d/nginx start
+
+->gunicorn - pip install
+
+como funcionam?:
+requisição > nginx > gunicorn > flaskapp
+
+-> supervisor: para manter nossa app funcionando ou autostart
+$ sudo install supervisor
+
+################# Firewall - para setar manualmente 
+instalar na maquina:
+sudo apt install ufw - uncomplicated firewall
+ufw status
+ufw default allow outgoing
+ufw allow 5000
+ufw enable

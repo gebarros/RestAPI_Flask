@@ -1,0 +1,55 @@
+######### RabbitMQ com Flask  - Filas e Mensageria com RabbitMQ
+- Gerencia filas e mensageria
+- Responsável pela comunicação entre os microserviços, é o Message Broker (intermediador)
+- o pacote pika é utilizado em python para se conectar ao RabbitMQ (Pika is a RabbitMQ (AMQP 0-9-1) client library for Python)
+- Mensageria: transmitir informações de X para Y, processamento asincrono e 
+escalabilidade
+- RabbitMQ: possível enviar e receber 25000 msg/s, não é o mais rápido, mas é suficiente. Simples, completo e 
+possível integrar com vários sistemas
+- AMQP: Advanced Message Queuing Protocol
+- filas podem ser dinamicas ou não
+- Importante definir os tipos de exchange
+- a msg, a fila e um exchange podem ou não ser persistentes, pode gravar em disco ou em memória
+- Desacoplamento entre serviços
+- Por padrão guarda td em memória
+- Padrão de mercado
+- Multiplexing conection - cada vez que abra um channel, uma nova thread é usada
+- Uma msg nunca é publicada direto em uma fila, passa primeiro pelo exchange, ela é quem determina para onde vai mandar
+
+Mensageria:
+- Fácil comunicação entre sistemas 
+- RabbitMQq não é o mais rápido, mas é eficiente
+- Filas podem ser dinamicas ou não
+- Vários consumers, várias linguagens
+- Exchange são roteadores, enviando mensagens para várias filas/exchanges
+- Persistência de mensagens vs. Performance
+
+Tipos de exchange:
+- Direct: passa por uma routing key
+- Fanout: todas as msgs enviadas vão para todos os sistemas
+- Topic: funciona tbm com routing key, mas nesse caso é possível estipular condições, regras
+- Headers (menos utilizado) 
+
+Filas (Queues)
+- Declarar uma fila e não criar uma fila
+- Funcionam por padrão FIFO: First In, First Out
+- É possível definir o tamanho da fila
+- Propriedades: durable (persistida ou em memória), 
+                auto-delete (removida qdo o consumer se desconecta),
+                expiry (define o tempo q não há msg ou clientes consumindo),
+                msg TTL (tempo de vida da msg)
+                Overflow (qdo transborda) - Drop head (remove a última), Reject publish (se atingir o limite da fila, rejeita)
+                Exclusive (somente channel que criou pode acessar)
+                Max length ou bytes: qtidade de msgs ou tamanho de bytes máximo permitido
+
+Dead letter queues:
+- Algumas msgs não conseguem ser entregues por algum motivo 
+- Podem ser encaminhas para uma Exchange específica que roteia as msgs para uma dead letter queues 
+- Tais msgs podem ser consumidas e averiguadas posteriormente 
+
+Lazy Queues:
+- Mensagens são armazenadas em disco
+- Exige alto I/O - leitura muito custosa
+
+
+
